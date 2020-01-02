@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "com.bermudalocket.euclid.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "client": [
+    "MixinCentralRenderTick",
+    "MixinChatOut",
+    "MixinChatIn",
+    "MixinOnJoinGame",
+    "MixinWorldEditSelectionPreview"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
