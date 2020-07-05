@@ -1,11 +1,40 @@
-plugins {
-	id 'fabric-loom' version '0.2.6-SNAPSHOT'
-	id 'maven-publish'
-	id 'io.freefair.lombok' version '4.1.6'
+buildscript {
+	repositories {
+		jcenter()
+		maven {
+			name = "Fabric"
+			url = "https://maven.fabricmc.net/"
+		}
+	}
+	dependencies {
+		classpath 'net.fabricmc:fabric-loom:0.4-SNAPSHOT'
+	}
+}
+
+apply plugin: "fabric-loom"
+
+repositories {
+	flatDir {
+		dirs "src/main/resources"
+	}
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+	minecraft "com.mojang:minecraft:1.16.1"
+	mappings "net.fabricmc:yarn:1.16.1+build.1:v2"
+	modCompile "net.fabricmc:fabric-loader:0.8.9+build.203"
+
+	// Fabric API. This is technically optional, but you probably want it anyway.
+	modCompile "net.fabricmc.fabric-api:fabric-api:0.14.1+build.372-1.16"
+
+	implementation("com.google.guava:guava:29.0-jre")
+
+	modImplementation "me.shedaniel.cloth:config-2:4.5.6"
+	include "me.shedaniel.cloth:config-2:4.5.6"
+}
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
@@ -14,29 +43,10 @@ group = project.maven_group
 minecraft {
 }
 
-repositories {
-	mavenCentral()
-	jcenter()
-	flatDir {
-		dirs 'src/main/resources'
-	}
-}
-
-dependencies {
-	//to change the versions see the gradle.properties file
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
-
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-	modImplementation("me.shedaniel.cloth:config-2:${cloth_config_version}") {
-		transitive = false
-	}
-	include("cloth-config:config:2:${cloth_config_version}") {
-		transitive = false
-	}
+compileJava {
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
+	options.encoding = "UTF-8"
 }
 
 processResources {
@@ -57,37 +67,4 @@ processResources {
 // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
 tasks.withType(JavaCompile) {
 	options.encoding = "UTF-8"
-}
-
-// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-// if it is present.
-// If you remove this task, sources will not be generated.
-task sourcesJar(type: Jar, dependsOn: classes) {
-	classifier = "sources"
-	from sourceSets.main.allSource
-}
-
-jar {
-	from "LICENSE"
-}
-
-// configure the maven publication
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			// add all the jars that should be included when publishing to maven
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
-		}
-	}
-
-	// select the repositories you want to publish to
-	repositories {
-		// uncomment to publish to the local maven
-		// mavenLocal()
-	}
 }

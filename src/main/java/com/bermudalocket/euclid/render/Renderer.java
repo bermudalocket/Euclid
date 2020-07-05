@@ -17,7 +17,7 @@ public interface Renderer {
     }
 
     default void translate(boolean back, float tickDelta) {
-        Euclid.INSTANCE.getPlayer().ifPresent(player -> {
+        Euclid.getPlayer().ifPresent(player -> {
             double dx = player.prevX + (player.getPos().getX() - player.prevX) * tickDelta;
             double dy = player.prevY + (player.getPos().getY() - player.prevY) * tickDelta;
             double dz = player.prevZ + (player.getPos().getZ() - player.prevZ) * tickDelta;
@@ -31,7 +31,7 @@ public interface Renderer {
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.enableDepthTest();
         RenderSystem.depthFunc(GL11.GL_NOTEQUAL);
-        RenderSystem.lineWidth(1.5f);
+        RenderSystem.lineWidth(3f);
         RenderSystem.disableTexture();
         RenderSystem.depthMask(true);
         RenderSystem.disableFog();
@@ -50,14 +50,18 @@ public interface Renderer {
         double x2 = b.getX() + 0.5;
         double y2 = b.getY() + 0.5;
         double z2 = b.getZ() + 0.5;
-        BufferBuilder builder = Tessellator.getInstance().getBuffer();
-        builder.begin(GL11.GL_LINE, VertexFormats.POSITION_COLOR);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder builder = tessellator.getBuffer();
         this.startRendering();
         this.translate(tickDelta);
+        RenderSystem.lineWidth(3);
+
+        builder.begin(GL11.GL_LINES, VertexFormats.POSITION_COLOR);
         builder.vertex(x1, y1, z1).color(color.red(), color.green(), color.blue(), color.alpha()).next();
         builder.vertex(x2, y2, z2).color(color.red(), color.green(), color.blue(), color.alpha()).next();
-        Tessellator.getInstance().draw();
+        tessellator.draw();
         this.endRendering();
+        this.translate(true, tickDelta);
     }
 
     default void drawRectangularPrism(BlockPos pos, RGBA color, float tickDelta) {
@@ -65,7 +69,7 @@ public interface Renderer {
     }
 
     default void drawRectangularPrism(BlockPos pos, BlockPos pos2, RGBA color, float tickDelta) {
-        this.drawRectangularPrism(pos, pos2, color, 1.5f, tickDelta);
+        this.drawRectangularPrism(pos, pos2, color, 3f, tickDelta);
     }
 
     default void drawRectangularPrism(BlockPos pos, BlockPos pos2, RGBA color, float line, float tickDelta) {

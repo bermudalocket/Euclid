@@ -36,8 +36,11 @@ public class Result {
         return _timestamp;
     }
 
+    /**
+     * <b>Offsets the timestamp by 1000 ms.</b>
+     */
     public void offsetTimestamp() {
-        _timestamp += 1000 + Math.random()*1000;
+        _timestamp += 1000;
     }
 
     public String getPlayerName() {

@@ -1,12 +1,12 @@
 package com.bermudalocket.euclid;
 
 import com.bermudalocket.euclid.util.RGBA;
-import lombok.Getter;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.text.LiteralText;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,7 +18,7 @@ public class Configuration {
 
     public static final Configuration INSTANCE = new Configuration();
 
-    private File configFile;
+    private final File configFile;
 
     public boolean SEND_INIT_HANDSHAKE_AUTOMATICALLY = true;
     public int WIREFRAME_RED = 255;
@@ -30,28 +30,27 @@ public class Configuration {
         return new RGBA(this.WIREFRAME_RED/255f, this.WIREFRAME_GREEN/255f, this.WIREFRAME_BLUE/255f, this.WIREFRAME_ALPHA/100f);
     }
 
-    @Getter
-    private Screen configScreen;
+    public final Screen configScreen;
 
     private Configuration() {
         this.configFile = new File(FabricLoader.getInstance().getConfigDirectory(), "euclid.properties");
         this.load();
 
-        ConfigBuilder builder = ConfigBuilder.create().setTitle("Euclid Configuration");
+        ConfigBuilder builder = ConfigBuilder.create().setTitle(new LiteralText("Euclid Configuration"));
         ConfigEntryBuilder entryBuilder = ConfigEntryBuilder.create();
 
-        ConfigCategory mainCategory = builder.getOrCreateCategory("Euclid");
+        ConfigCategory mainCategory = builder.getOrCreateCategory(new LiteralText("Euclid"));
         mainCategory.addEntry(entryBuilder
-            .startBooleanToggle("Automatic handshake (/we cui) upon login", this.SEND_INIT_HANDSHAKE_AUTOMATICALLY)
+            .startBooleanToggle(new LiteralText("Automatic handshake (/we cui) upon login"), this.SEND_INIT_HANDSHAKE_AUTOMATICALLY)
             .setSaveConsumer(b -> {
                 this.SEND_INIT_HANDSHAKE_AUTOMATICALLY = b;
                 this.save();
             })
             .build()
         );
-        ConfigCategory wireframeCategory = builder.getOrCreateCategory("Wireframe");
+        ConfigCategory wireframeCategory = builder.getOrCreateCategory(new LiteralText("Wireframe"));
         wireframeCategory.addEntry(entryBuilder
-            .startIntSlider("Red", 255, 0, 255)
+            .startIntSlider(new LiteralText("Red"), 255, 0, 255)
             .setSaveConsumer(i -> {
                 this.WIREFRAME_RED = i;
                 this.save();
@@ -59,7 +58,7 @@ public class Configuration {
             .build()
         );
         wireframeCategory.addEntry(entryBuilder
-            .startIntSlider("Green", 0, 0, 255)
+            .startIntSlider(new LiteralText("Green"), 0, 0, 255)
             .setSaveConsumer(i -> {
                 this.WIREFRAME_GREEN = i;
                 this.save();
@@ -67,7 +66,7 @@ public class Configuration {
             .build()
         );
         wireframeCategory.addEntry(entryBuilder
-            .startIntSlider("Blue", 0, 0, 255)
+            .startIntSlider(new LiteralText("Blue"), 0, 0, 255)
             .setSaveConsumer(i -> {
                 this.WIREFRAME_BLUE = i;
                 this.save();
@@ -75,7 +74,7 @@ public class Configuration {
             .build()
         );
         wireframeCategory.addEntry(entryBuilder
-            .startIntSlider("Alpha (%)", 37, 0, 100)
+            .startIntSlider(new LiteralText("Alpha (%)"), 37, 0, 100)
             .setSaveConsumer(i -> {
                 this.WIREFRAME_ALPHA = i;
                 this.save();

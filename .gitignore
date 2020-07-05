@@ -22,3 +22,4 @@ src/main/generated/
 
 # fabric
 run/
+/gradle/

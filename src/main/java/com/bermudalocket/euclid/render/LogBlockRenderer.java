@@ -13,15 +13,16 @@ public class LogBlockRenderer implements TickableRenderer {
 
     @Override
     public void onClientTick(float tickDelta) {
-        LogBlockResults.INSTANCE.getResults().forEach((player, results) -> {
+        LogBlockResults.getResults().forEach((player, results) -> {
             for (Result result : results) {
                 if (result.isHidden()) {
                     continue;
                 }
                 this.drawRectangularPrism(result.getPos(), BlockHelper.getBlockColor(result.getBlock()), tickDelta);
-                LogBlockResults.INSTANCE.getPrevious(result).ifPresent(prev ->
-                    this.drawLineConnectingTwoBlocks(prev.getPos(), result.getPos(), RGBA.PINK, tickDelta)
-                );
+                LogBlockResults.getPrevious(result).ifPresent(prev -> {
+                    //System.out.println("drawing line from " + result.getPos() + " to " + prev.getPos());
+                    this.drawLineConnectingTwoBlocks(prev.getPos(), result.getPos(), RGBA.PINK, tickDelta);
+                });
             }
         });
     }

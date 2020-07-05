@@ -16,12 +16,14 @@ public class WorldEditRenderer implements TickableRenderer {
 
     @Override
     public void onClientTick(float tickDelta) {
-        Selection selection = DataStorage.INSTANCE.getSelection();
+        Selection selection = DataStorage.getSelection();
         if (selection.isEmpty()) {
             return;
         }
-        selection.getPosition(Selection.Pos.FIRST).ifPresent(pos -> this.drawRectangularPrism(pos, RGBA.GREEN, tickDelta));
-        selection.getPosition(Selection.Pos.SECOND).ifPresent(pos -> this.drawRectangularPrism(pos, RGBA.BLUE, tickDelta));
+        selection.getPosition(Selection.Pos.FIRST)
+                 .ifPresent(pos -> this.drawRectangularPrism(pos, RGBA.GREEN, tickDelta));
+        selection.getPosition(Selection.Pos.SECOND)
+                 .ifPresent(pos -> this.drawRectangularPrism(pos, RGBA.BLUE, tickDelta));
         if (selection.isComplete()) {
             RGBA color = Configuration.INSTANCE.getWireframeColor();
             BlockPos min = selection.getMinUnsafe();
@@ -35,6 +37,10 @@ public class WorldEditRenderer implements TickableRenderer {
             RenderSystem.clearDepth(1.0);
             this.drawRectangularPrism(min, max, color.setAlpha(color.alpha()/2f), 3f, () -> RenderSystem.depthFunc(GL11.GL_GREATER), tickDelta);
         }
+
+        DataStorage.getGhostIfComplete().ifPresent((ghost) ->
+            this.drawGrid(ghost.getMinUnsafe(), ghost.getMaxUnsafe(), RGBA.GRAY, null, tickDelta)
+        );
     }
 
 }

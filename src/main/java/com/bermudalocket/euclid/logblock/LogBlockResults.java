@@ -1,122 +1,90 @@
 package com.bermudalocket.euclid.logblock;
 
-import com.bermudalocket.euclid.util.BlockHelper;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.function.Predicate;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LogBlockResults {
 
-    public static final LogBlockResults INSTANCE = new LogBlockResults();
+    private static final HashMap<String, TreeSet<Result>> resultsByPlayer = new HashMap<>();
 
-    private static final Calendar CALENDAR = Calendar.getInstance();
+    private static class PlayerResultsFactory {
 
-    private final HashMap<String, TreeSet<Result>> resultsByPlayer = new HashMap<>();
+        static TreeSet<Result> create() {
+            return new TreeSet<>((a, b) -> (int) (b.getTimestamp() - a.getTimestamp()));
+        }
+    }
 
-    private final ConcurrentLinkedQueue<BlockPos> pendingBlockPositions = new ConcurrentLinkedQueue<>();
+    private static final ConcurrentLinkedQueue<BlockPos> pendingBlockPositions = new ConcurrentLinkedQueue<>();
 
-    private Result mostRecentResult;
+    private static Result mostRecentResult;
 
-    // block changes in the last n days at x:y:z in world
-    private static final Pattern TOOLBLOCK_INIT_PATTERN = Pattern.compile(
-            "(block changes in the last ([\\d]+ [\\w]+) at)\\s([\\d-]+):([\\d-]+):([\\d-]+)\\s(in)\\s([\\w-]+):"
+    // block changes in the last # [timeperiod] at (x):(y):(z) in [world]
+    public static final Pattern TOOLBLOCK_INIT_PATTERN = Pattern.compile(
+        "Block changes in the last \\d+ [a-zA-Z]+ at (?<x>\\d+):(?<y>\\d+):(?<z>\\d+) in \\w+:"
     );
 
     // 07-30 1:23:41 somePlayer1 created dirt
-    private static final Pattern TOOLBLOCK_RESULT_PATTERN = Pattern.compile(
-            "([\\d]+-[\\d]+)\\s([\\d]+:[\\d]+:[\\d]+)\\s([a-zA-Z0-9]+)\\s(created|destroyed)\\s([a-zA-Z_]+)"
+    public static final Pattern TOOLBLOCK_RESULT_PATTERN = Pattern.compile(
+        "^\\[(?<month>\\d+)-(?<day>\\d+) (?<hour>\\d+):(?<minute>\\d+)\\] (?<player>\\w+) (?<action>destroyed|created|replaced) (?<block>\\w+)"
     );
 
-    // (1) 07-30 01:02:03 somePlayer1 created dirt at 23:4:2500
-    private static final Pattern ORDERED_SEARCH_RESULT_PATTERN = Pattern.compile(
-            "(\\(\\d+\\))\\s([\\d]+-[\\d]+)\\s([\\d]+:[\\d]+:[\\d]+)\\s([a-zA-Z0-9]+)\\s(created|destroyed)\\s([a-zA-Z_]+)\\s(at)\\s([-\\d]+:[-\\d]+:[-\\d]+)"
+    // (1) 07-30 01:02 somePlayer1 created DIRT at 23, 4, 2500
+    public static final Pattern ORDERED_SEARCH_RESULT_PATTERN = Pattern.compile(
+            "\\((?<id>[0-9]+)\\) \\[(?<month>\\d+)-(?<day>\\d+) (?<hour>\\d+):(?<minute>\\d+)] (?<player>\\w+) (?<action>destroyed|created|replaced) (?<block>\\w+) at (?<x>\\d+), (?<y>\\d+), (?<z>\\d+)"
     );
 
-    private LogBlockResults() { }
-
-    public void parseToolBlockResultsHeader(String message) {
-        Matcher matcher = TOOLBLOCK_INIT_PATTERN.matcher(message);
-        if (matcher.find()) {
-            int x = Integer.parseInt(matcher.group(3));
-            int y = Integer.parseInt(matcher.group(4));
-            int z = Integer.parseInt(matcher.group(5));
-            this.await(new BlockPos(x, y, z));
-        }
+    public static void await(BlockPos pos) {
+        pendingBlockPositions.add(pos);
     }
 
-    public void parseResult(String message) {
-        Matcher matcher = (this.isWaiting() ? TOOLBLOCK_RESULT_PATTERN : ORDERED_SEARCH_RESULT_PATTERN).matcher(message);
-        if (matcher.find()) {
-            if (this.isWaiting()) {
-                this.parseToolBlockResult(matcher);
-            } else{
-                this.parseSearchResults(matcher);
-            }
-        }
-    }
-
-    public void await(BlockPos pos) {
-        this.pendingBlockPositions.add(pos);
-    }
-
-    public void complete(String player, Block block, EditType editType, long timestamp) {
-        BlockPos pos = this.pendingBlockPositions.poll();
+    public static void complete(String player, Block block, EditType editType, long timestamp) {
+        BlockPos pos = pendingBlockPositions.poll();
         Result result = new Result(-1, player, block, pos, editType, InspectionType.TOOLBLOCK, timestamp);
-        this.addResult(result);
+        addResult(result);
     }
 
-    public boolean isWaiting() {
-        return !this.pendingBlockPositions.isEmpty();
+    public static boolean isWaiting() {
+        return !pendingBlockPositions.isEmpty();
     }
 
-    private long dateTimeToTimestamp(String date, String time) {
-        String[] dateParts = date.split("-");
-        String[] timeParts = time.split(":");
-        int month = Integer.parseInt(dateParts[0]);
-        int day = Integer.parseInt(dateParts[1]);
-        int hour = Integer.parseInt(timeParts[0]);
-        int minute = Integer.parseInt(timeParts[1]);
-        int second = Integer.parseInt(timeParts[2]);
-        CALENDAR.set(java.util.Calendar.MONTH, month);
-        CALENDAR.set(java.util.Calendar.DAY_OF_MONTH, day);
-        CALENDAR.set(java.util.Calendar.HOUR, hour);
-        CALENDAR.set(java.util.Calendar.MINUTE, minute);
-        CALENDAR.set(java.util.Calendar.SECOND, second);
-        return CALENDAR.getTimeInMillis();
-    }
-
-    public void addResult(Result result) {
+    public static void addResult(Result result) {
         String player = result.getPlayerName();
-        TreeSet<Result> playerResults = resultsByPlayer.getOrDefault(player, new TreeSet<>((e1, e2) -> (int) (e2.getTimestamp() - e1.getTimestamp())));
+        TreeSet<Result> playerResults = resultsByPlayer.getOrDefault(player, PlayerResultsFactory.create());
+
+        // do any other results override this one?
         if (playerResults.stream().anyMatch(otherResult -> otherResult.overrides(result))) {
             result.setVisible(false);
         }
+
+        // do any other results have the exact same epoch timestamp? this is actually very likely
+        // as the logblock interface only returns HH:MM
         if (playerResults.stream().anyMatch(otherResult -> otherResult.getTimestamp() == result.getTimestamp())) {
             result.offsetTimestamp();
         }
+
         playerResults.add(result);
         mostRecentResult = result;
         resultsByPlayer.put(player, playerResults);
+
+        System.out.println(resultsByPlayer);
     }
 
-    public HashMap<String, TreeSet<Result>> getResults() {
+    public static HashMap<String, TreeSet<Result>> getResults() {
         return resultsByPlayer;
     }
 
-    public void clear() {
+    public static void clear() {
         resultsByPlayer.clear();
     }
 
-    public void pre() {
+    public static void pre() {
         String query = String.format(
             "/lb player %s before %s coords limit 20",
             mostRecentResult.getPlayerName(),
@@ -125,27 +93,13 @@ public class LogBlockResults {
         MinecraftClient.getInstance().player.sendChatMessage(query);
     }
 
-    public void show(Predicate<Result> predicate) {
-        resultsByPlayer.values().stream()
-                       .flatMap(TreeSet::stream)
-                       .filter(predicate)
-                       .forEach(Result::show);
-    }
-
-    public void hide(Predicate<Result> predicate) {
-        resultsByPlayer.values().stream()
-                       .flatMap(TreeSet::stream)
-                       .filter(predicate)
-                       .forEach(Result::hide);
-    }
-
-    public Optional<Result> getPrevious(Result result) {
+    public static Optional<Result> getPrevious(Result result) {
         Result prev = resultsByPlayer.get(result.getPlayerName()).lower(result);
         return prev == null ? Optional.empty()
                             : prev.isHidden() ? getPrevious(prev) : Optional.of(prev);
     }
 
-    public void ratio() {
+    public static void ratio() {
         if (!resultsByPlayer.isEmpty()) {
             String player = mostRecentResult.getPlayerName();
             long latest = resultsByPlayer.get(player).first().getTimestamp();
@@ -160,51 +114,13 @@ public class LogBlockResults {
         }
     }
 
-    public String timeToString(long time) {
+    public static String timeToString(long time) {
         java.util.Calendar cal = java.util.Calendar.getInstance();
         cal.setTimeInMillis(time);
         return String.format("%d.%d.%d %02d:%02d:%02d",
                              cal.get(java.util.Calendar.DAY_OF_MONTH), cal.get(java.util.Calendar.MONTH),
                              cal.get(java.util.Calendar.YEAR), cal.get(java.util.Calendar.HOUR_OF_DAY),
                              cal.get(java.util.Calendar.MINUTE), cal.get(java.util.Calendar.SECOND));
-    }
-
-    public void parseSearchResults(Matcher matcher) {
-        if (!matcher.find()) {
-            return;
-        }
-        // raw input
-        String id = matcher.group(1).replace("(", "").replace(")", "");
-        String time = matcher.group(3);
-        String date = matcher.group(2);
-        String player = matcher.group(4);
-        String type = matcher.group(5);
-        String blockType = matcher.group(6);
-        String[] coords = matcher.group(8).split(":");
-
-        // processed/cast input
-        int idNo = Integer.parseInt(id);
-        int x = Integer.parseInt(coords[0]);
-        int y = Integer.parseInt(coords[1]);
-        int z = Integer.parseInt(coords[2]);
-        BlockPos blockPos = new BlockPos(x, y, z);
-        EditType editType = EditType.fromString(type);
-        long timestamp = this.dateTimeToTimestamp(time, date);
-        Block destroyedBlock = BlockHelper.blockTypeFromString(blockType);
-
-        Result result = new Result(idNo, player, destroyedBlock, blockPos, editType, InspectionType.QUERY, timestamp);
-        addResult(result);
-    }
-
-    public void parseToolBlockResult(Matcher matcher)  {
-        if (!matcher.find()) {
-            return;
-        }
-        String player = matcher.group(3);
-        EditType editType = EditType.fromString(matcher.group(4));
-        Block block = BlockHelper.blockTypeFromString(matcher.group(5));
-        long timestamp = this.dateTimeToTimestamp(matcher.group(1), matcher.group(2));
-        this.complete(player, block, editType, timestamp);
     }
 
 }

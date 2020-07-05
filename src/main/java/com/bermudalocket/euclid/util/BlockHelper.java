@@ -4,17 +4,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.DefaultedRegistry;
 
 import java.util.HashMap;
 import java.util.HashSet;
 
 public class BlockHelper {
-
-    public static BlockPos parseBlockPos(String x, String y, String z) {
-        return new BlockPos(Integer.parseInt(x), Integer.parseInt(y), Integer.parseInt(z));
-    }
 
     private static final HashMap<Block, RGBA> COLOR_MAP = new HashMap<>();
 
@@ -54,6 +49,8 @@ public class BlockHelper {
         blockColorGroup(new RGBA(0.5019608f, 0.5019608f, 0.5019608f), "GRAY_");
         blockColorGroup(new RGBA(0.54509807f, 0.27058825f, 0.07450981f), "BROWN_");
         blockColorGroup(new RGBA(0f, 0f, 0f, 1f), "BLACK_");
+
+
     }
 
     private static void blockColorGroup(RGBA color, String keyword) {
@@ -93,9 +90,7 @@ public class BlockHelper {
             }
             return blockColor;
         }
-        if (blockColor == null) {
-            blockColor = RGBA.YELLOW;
-        }
+        blockColor = RGBA.YELLOW;
         COLOR_MAP.put(block, blockColor);
         return blockColor;
     }

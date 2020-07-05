@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "euclid",
-  "version": "1.0.0-beta6",
+  "version": "1.1",
 
   "name": "Euclid",
   "description": "Visualization tool for WorldEdit and LogBlock.",
@@ -25,7 +25,7 @@
   "depends": {
     "fabricloader": ">=0.7.2",
     "fabric": "*",
-    "minecraft": "1.15.x"
+    "minecraft": "1.16.x"
   },
   "suggests": {
     "flamingo": "*"

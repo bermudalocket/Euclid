@@ -6,8 +6,8 @@
   ],
   "client": [
     "MixinCentralRenderTick",
-    "MixinChatOut",
     "MixinChatIn",
+    "MixinChatOut",
     "MixinOnJoinGame",
     "MixinWorldEditSelectionPreview"
   ],

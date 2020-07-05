@@ -3,7 +3,9 @@ package com.bermudalocket.euclid.util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.Arrays;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public enum Direction {
 
@@ -38,6 +40,13 @@ public enum Direction {
 
     public String getLetter() {
         return _letter;
+    }
+
+    public static void fromLetter(String string, Consumer<Direction> completion) {
+        Arrays.stream(Direction.values())
+              .filter((direction) -> direction._letter.equals(string))
+              .findFirst()
+              .ifPresent(completion);
     }
 
     public static Direction fromLetter(String string) {

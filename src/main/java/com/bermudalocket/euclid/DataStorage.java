@@ -1,45 +1,38 @@
 package com.bermudalocket.euclid;
 
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.util.math.BlockPos;
+
+import java.util.Optional;
 
 public class DataStorage {
 
-    public static final DataStorage INSTANCE = new DataStorage();
+    private static final Selection selection = new Selection();
 
-    private boolean worldEditFound = true;
-    private ClientPlayerEntity player;
-    private final Selection selection = new Selection();
+    private static final Selection ghost = new Selection();
 
-    private DataStorage() {
+    public static Selection getSelection() {
+        return selection;
     }
 
-    public ClientPlayerEntity getPlayer() {
-        return this.player;
+    public static void setSelection(Selection.Pos index, BlockPos pos) {
+        selection.setPosition(index, pos);
     }
 
-    public void updatePlayerState(ClientPlayerEntity player) {
-        this.player = player;
+    public static void clearSelection() {
+        selection.reset();
     }
 
-    public void setSelection(Selection.Pos index, BlockPos pos) {
-        this.selection.setPosition(index, pos);
+    public static Optional<Selection> getGhostIfComplete() {
+        return Optional.ofNullable(ghost.isComplete() ? ghost : null);
     }
 
-    public Selection getSelection() {
-        return this.selection;
+    public static void setGhostWireframe(BlockPos pos1, BlockPos pos2) {
+        ghost.setPosition(Selection.Pos.FIRST, pos1);
+        ghost.setPosition(Selection.Pos.SECOND, pos2);
     }
 
-    public void clearSelection() {
-        this.selection.reset();
-    }
-
-    public boolean isWorldEditFound() {
-        return worldEditFound;
-    }
-
-    public void setWorldEditFound(boolean worldEditFound) {
-        this.worldEditFound = worldEditFound;
+    public static void clearGhost() {
+        ghost.reset();
     }
 
 }
