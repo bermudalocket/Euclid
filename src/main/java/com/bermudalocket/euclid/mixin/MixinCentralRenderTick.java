@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(WorldRenderer.class)
 public abstract class MixinCentralRenderTick {
 
-    //@Inject(method = "render", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", args = "ldc=weather", shift = At.Shift.BEFORE))
     @Inject(method = "render", at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/render/WorldRenderer;renderChunkDebugInfo(Lnet/minecraft/client/render/Camera;)V",

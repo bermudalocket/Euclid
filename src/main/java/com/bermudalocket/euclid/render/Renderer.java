@@ -17,7 +17,7 @@ public interface Renderer {
     }
 
     default void translate(boolean back, float tickDelta) {
-        Euclid.getPlayer().ifPresent(player -> {
+        Euclid.player().ifPresent(player -> {
             double dx = player.prevX + (player.getPos().getX() - player.prevX) * tickDelta;
             double dy = player.prevY + (player.getPos().getY() - player.prevY) * tickDelta;
             double dz = player.prevZ + (player.getPos().getZ() - player.prevZ) * tickDelta;

@@ -8,14 +8,14 @@ public enum EditType {
     DESTROYED(RGBA.RED),
     REPLACED(RGBA.YELLOW);
 
-    private RGBA _color;
+    private RGBA color;
 
     EditType(RGBA color) {
-        _color = color;
+        this.color = color;
     }
 
     public RGBA getColor() {
-        return _color;
+        return color;
     }
 
     public static String getDesc(EditType type) {

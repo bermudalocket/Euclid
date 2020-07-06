@@ -31,9 +31,7 @@ public class EuclidMenu {
             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/e config"))
     );
 
-    public static Text EUCLID_MENU =
-            new LiteralText("Euclid: ").setStyle(Style.EMPTY.withBold(true))
-            .append(CONFIG);
+    public static Text EUCLID_MENU = new LiteralText("Euclid: ").setStyle(Style.EMPTY.withBold(true)).append(CONFIG);
 
     public static Text LB_MENU =
             new LiteralText("LogBlock: ").setStyle(Style.EMPTY.withBold(true))
@@ -42,8 +40,6 @@ public class EuclidMenu {
 
     public static Text LB_FAVS = new LiteralText("LB Shortcuts: ").setStyle(Style.EMPTY.withBold(true));
 
-    public static Text DIVIDER = new LiteralText("-----------------------------------------------------");
-
     public static Text VERSION = new LiteralText("Euclid v1.1").setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(true));
 
     public static Text INFO_MSG =
@@ -51,11 +47,6 @@ public class EuclidMenu {
                     .setStyle(Style.EMPTY.withColor(Formatting.GRAY)
                     .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("https://github.com/bermudalocket/Euclid")))
                     .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/bermudalocket/Euclid")));
-
-    public static final Text ERROR_MSG =
-            new LiteralText("Error: WorldEdit not found. Some Euclid features will not work.")
-                    .setStyle(Style.EMPTY.withColor(Formatting.RED));
-
 
     public static Text WE_MENU = new LiteralText("WorldEdit: ").setStyle(Style.EMPTY.withBold(true)).append(CLEAR_GHOST);
 }

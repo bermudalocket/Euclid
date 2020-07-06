@@ -46,7 +46,7 @@ public class LogBlockResults {
 
     public static void complete(String player, Block block, EditType editType, long timestamp) {
         BlockPos pos = pendingBlockPositions.poll();
-        Result result = new Result(-1, player, block, pos, editType, InspectionType.TOOLBLOCK, timestamp);
+        Result result = new Result(-1, player, block, pos, timestamp);
         addResult(result);
     }
 

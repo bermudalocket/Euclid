@@ -38,7 +38,7 @@ public abstract class MixinWorldEditSelectionPreview {
                     int num = Integer.parseInt(split[1]);
                     Direction dir = Direction.fromLetter(split[2]);
                     if (dir != null) {
-                        Vec3d translate = dir.getVector().multiply(num);
+                        Vec3d translate = dir.vector.multiply(num);
                         Vec3d minShift = new Vec3d(pos1.getX(), pos1.getY(), pos1.getZ()).add(translate);
                         Vec3d maxShift = new Vec3d(pos2.getX(), pos2.getY(), pos2.getZ()).add(translate);
                         //WorldEditRenderer.INSTANCE.drawGrid(minShift, );

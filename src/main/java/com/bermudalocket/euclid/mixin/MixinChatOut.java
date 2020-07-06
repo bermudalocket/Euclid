@@ -23,7 +23,7 @@ public abstract class MixinChatOut {
         }
 
         if (msg.equalsIgnoreCase("/euclid") || msg.equalsIgnoreCase("/e")) {
-            Euclid.getPlayer().ifPresent((player) -> {
+            Euclid.player().ifPresent((player) -> {
                 player.sendMessage(EuclidMenu.VERSION, false);
                 player.sendMessage(EuclidMenu.INFO_MSG, false);
                 player.sendMessage(EuclidMenu.EUCLID_MENU, false);
