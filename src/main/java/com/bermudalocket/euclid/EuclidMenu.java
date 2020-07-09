@@ -40,7 +40,7 @@ public class EuclidMenu {
 
     public static Text LB_FAVS = new LiteralText("LB Shortcuts: ").setStyle(Style.EMPTY.withBold(true));
 
-    public static Text VERSION = new LiteralText("Euclid v1.1").setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(true));
+    public static Text VERSION = new LiteralText("Euclid v1.2.1").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
 
     public static Text INFO_MSG =
             new LiteralText("Click here to report a bug on GitHub.")

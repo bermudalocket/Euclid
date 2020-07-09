@@ -20,7 +20,6 @@ public class Configuration {
 
     private final File configFile;
 
-    public boolean SEND_INIT_HANDSHAKE_AUTOMATICALLY = true;
     public int WIREFRAME_RED = 255;
     public int WIREFRAME_GREEN = 0;
     public int WIREFRAME_BLUE = 0;
@@ -39,15 +38,6 @@ public class Configuration {
         ConfigBuilder builder = ConfigBuilder.create().setTitle(new LiteralText("Euclid Configuration"));
         ConfigEntryBuilder entryBuilder = ConfigEntryBuilder.create();
 
-        ConfigCategory mainCategory = builder.getOrCreateCategory(new LiteralText("Euclid"));
-        mainCategory.addEntry(entryBuilder
-            .startBooleanToggle(new LiteralText("Automatic handshake (/we cui) upon login"), this.SEND_INIT_HANDSHAKE_AUTOMATICALLY)
-            .setSaveConsumer(b -> {
-                this.SEND_INIT_HANDSHAKE_AUTOMATICALLY = b;
-                this.save();
-            })
-            .build()
-        );
         ConfigCategory wireframeCategory = builder.getOrCreateCategory(new LiteralText("Wireframe"));
         wireframeCategory.addEntry(entryBuilder
             .startIntSlider(new LiteralText("Red"), 255, 0, 255)
@@ -94,11 +84,10 @@ public class Configuration {
             Properties props = new Properties();
             props.load(in);
             in.close();
-            SEND_INIT_HANDSHAKE_AUTOMATICALLY = Boolean.parseBoolean((String) props.computeIfAbsent("auto-handshake", i -> "false"));
-            WIREFRAME_RED = Integer.parseInt((String) props.computeIfAbsent("wireframe-red", i -> "255"));
-            WIREFRAME_GREEN = Integer.parseInt((String) props.computeIfAbsent("wireframe-green", i -> "0"));
-            WIREFRAME_BLUE = Integer.parseInt((String) props.computeIfAbsent("wireframe-blue", i -> "0"));
-            WIREFRAME_ALPHA = Integer.parseInt((String) props.computeIfAbsent("wireframe-alpha", i -> "37"));
+            WIREFRAME_RED = Integer.parseInt((String) props.computeIfAbsent("wireframe-red", __ -> "255"));
+            WIREFRAME_GREEN = Integer.parseInt((String) props.computeIfAbsent("wireframe-green", __ -> "0"));
+            WIREFRAME_BLUE = Integer.parseInt((String) props.computeIfAbsent("wireframe-blue", __ -> "0"));
+            WIREFRAME_ALPHA = Integer.parseInt((String) props.computeIfAbsent("wireframe-alpha", __ -> "37"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -107,8 +96,6 @@ public class Configuration {
     public void save() {
         try {
             FileOutputStream out = new FileOutputStream(configFile, false);
-            out.write(("auto-handshake=" + SEND_INIT_HANDSHAKE_AUTOMATICALLY).getBytes());
-            out.write("\n".getBytes());
             out.write(("wireframe-red=" + WIREFRAME_RED).getBytes());
             out.write("\n".getBytes());
             out.write(("wireframe-green=" + WIREFRAME_GREEN).getBytes());

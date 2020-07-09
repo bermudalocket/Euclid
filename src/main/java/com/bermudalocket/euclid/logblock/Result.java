@@ -18,6 +18,7 @@ public class Result {
         this.block = block;
         this.blockPos = pos;
         this.timestamp = timestamp;
+        this.visible = true;
     }
 
     public long getTimestamp() {
