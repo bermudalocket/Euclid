@@ -2,8 +2,8 @@ package com.bermudalocket.euclid.render;
 
 import com.bermudalocket.euclid.logblock.LogBlockResults;
 import com.bermudalocket.euclid.logblock.Result;
-import com.bermudalocket.euclid.util.BlockHelper;
-import com.bermudalocket.euclid.util.RGBA;
+
+import java.awt.Color;
 
 public class LogBlockRenderer implements TickableRenderer {
 
@@ -11,18 +11,20 @@ public class LogBlockRenderer implements TickableRenderer {
 
     private LogBlockRenderer() { }
 
+    private static Color PINK = new Color(255, 145, 255, 128);
+
     @Override
     public void onClientTick(float tickDelta) {
         LogBlockResults.getResults().forEach((player, results) -> {
             for (Result result : results) {
-                if (result.isHidden()) {
+                if (result.blockPos == null) {
                     continue;
                 }
-                this.drawRectangularPrism(result.getPos(), BlockHelper.getBlockColor(result.getBlock()), tickDelta);
-                LogBlockResults.getPrevious(result).ifPresent(prev -> {
-                    //System.out.println("drawing line from " + result.getPos() + " to " + prev.getPos());
-                    this.drawLineConnectingTwoBlocks(prev.getPos(), result.getPos(), RGBA.PINK, tickDelta);
-                });
+                int overrideLevel = results.stream().filter(otherResult -> otherResult.overrides(result)).mapToInt(e -> 1).sum();
+                this.drawRectangularPrismWithInset(result.blockPos, result.editType.color, overrideLevel, tickDelta);
+                LogBlockResults.getPrevious(result)
+                               .filter(p -> p.blockPos != result.blockPos)
+                               .ifPresent(prev -> this.drawLineConnectingTwoBlocks(prev.blockPos, result.blockPos, PINK, tickDelta));
             }
         });
     }

@@ -119,7 +119,7 @@ public class Euclid implements ModInitializer {
             }
             return;
         }
-
+/*
         regex = CoreProtect.INSPECTION_HEADER.matcher(message);
         if (regex.find()) {
             try {
@@ -171,7 +171,7 @@ public class Euclid implements ModInitializer {
             }
             return;
         }
-
+*/
         regex = LogBlockResults.TOOLBLOCK_RESULT_PATTERN.matcher(message);
         if (regex.find()) {
             try {
@@ -215,7 +215,7 @@ public class Euclid implements ModInitializer {
                 EditType editType = EditType.valueOf(action.toUpperCase());
                 long timestamp = epochTimestampFromTimeAndDate(month, day, hour, minute);
 
-                Result result = new Result(id, player, block, pos, timestamp);
+                Result result = new Result(id, player, block, pos, timestamp, editType);
 
                 System.out.println("result = " + result);
                 LogBlockResults.addResult(result);

@@ -1,6 +1,5 @@
 package com.bermudalocket.euclid;
 
-import com.bermudalocket.euclid.util.RGBA;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
@@ -8,6 +7,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.LiteralText;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -25,8 +25,8 @@ public class Configuration {
     public int WIREFRAME_BLUE = 0;
     public int WIREFRAME_ALPHA = 37;
 
-    public RGBA getWireframeColor() {
-        return new RGBA(this.WIREFRAME_RED/255f, this.WIREFRAME_GREEN/255f, this.WIREFRAME_BLUE/255f, this.WIREFRAME_ALPHA/100f);
+    public Color getWireframeColor() {
+        return new Color(this.WIREFRAME_RED/255f, this.WIREFRAME_GREEN/255f, this.WIREFRAME_BLUE/255f, this.WIREFRAME_ALPHA/100f);
     }
 
     public final Screen configScreen;
@@ -39,6 +39,12 @@ public class Configuration {
         ConfigEntryBuilder entryBuilder = ConfigEntryBuilder.create();
 
         ConfigCategory wireframeCategory = builder.getOrCreateCategory(new LiteralText("Wireframe"));
+
+        wireframeCategory.addEntry(entryBuilder.startColorField(new LiteralText("Color"), Color.RED.getRGB())
+                                               .setSaveConsumer(i -> {
+
+                                               })
+                                               .build());
         wireframeCategory.addEntry(entryBuilder
             .startIntSlider(new LiteralText("Red"), 255, 0, 255)
             .setSaveConsumer(i -> {

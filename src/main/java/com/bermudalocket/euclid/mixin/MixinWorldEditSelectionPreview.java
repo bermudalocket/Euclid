@@ -4,7 +4,6 @@ import com.bermudalocket.euclid.DataStorage;
 import com.bermudalocket.euclid.Selection;
 import com.bermudalocket.euclid.render.WorldEditRenderer;
 import com.bermudalocket.euclid.util.Direction;
-import com.bermudalocket.euclid.util.RGBA;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -15,6 +14,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.awt.Color;
 
 @Mixin(ChatScreen.class)
 public abstract class MixinWorldEditSelectionPreview {
@@ -55,7 +56,7 @@ public abstract class MixinWorldEditSelectionPreview {
                     } else {
                         return;
                     }
-                    WorldEditRenderer.INSTANCE.drawGrid(newPos1, newPos2, RGBA.GRAY, null, delta);
+                    WorldEditRenderer.INSTANCE.drawGrid(newPos1, newPos2, Color.LIGHT_GRAY, null, delta);
                 } else if (text.startsWith("//expand") && split.length == 3) {
                     int num = Integer.parseInt(split[1]);
                     Direction dir = Direction.fromLetter(split[2]);

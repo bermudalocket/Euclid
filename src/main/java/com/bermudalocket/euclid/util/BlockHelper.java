@@ -2,58 +2,52 @@ package com.bermudalocket.euclid.util;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DefaultedRegistry;
 
+import java.awt.Color;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class BlockHelper {
 
-    private static final HashMap<Block, RGBA> COLOR_MAP = new HashMap<>();
+    private static final HashMap<Block, Color> COLOR_MAP = new HashMap<>();
 
-    private static final HashMap<Block, RGBA> HIGHEST_PRIORITY = new HashMap<>();
-
-    private static final HashSet<Block> LOW_PRIORITY = new HashSet<>();
+    private static final HashMap<Block, Color> HIGHEST_PRIORITY = new HashMap<>();
 
     static {
-        LOW_PRIORITY.add(Blocks.STONE);
+        HIGHEST_PRIORITY.put(Blocks.IRON_ORE, new Color(1.0f, 0.89411765f, 0.76862746f, 1f));
 
-        HIGHEST_PRIORITY.put(Blocks.IRON_ORE, new RGBA(1.0f, 0.89411765f, 0.76862746f, 1f));
-        blockColorGroup(new RGBA(0f, 1f, 1f), Blocks.DIAMOND_BLOCK, Blocks.DIAMOND_ORE);
-        blockColorGroup(new RGBA(0.0f, 1.0f, 0.49803922f), Blocks.EMERALD_BLOCK, Blocks.EMERALD_ORE);
-        blockColorGroup(new RGBA(1.0f, 0.84313726f, 0.0f), Blocks.GOLD_BLOCK, Blocks.GOLD_ORE);
-        blockColorGroup(new RGBA(0.972549f, 0.972549f, 1.0f), Blocks.IRON_BLOCK, Blocks.NETHER_QUARTZ_ORE);
-        blockColorGroup(RGBA.BLACK, Blocks.COAL_BLOCK, Blocks.COAL_ORE);
-        blockColorGroup(RGBA.BLUE, Blocks.LAPIS_BLOCK, Blocks.LAPIS_ORE);
-        blockColorGroup(RGBA.RED, Blocks.REDSTONE_ORE, Blocks.REDSTONE_BLOCK,
-            Blocks.REDSTONE_TORCH, Blocks.REDSTONE_WIRE, Blocks.REDSTONE_WALL_TORCH,
-            Blocks.POWERED_RAIL, Blocks.PISTON, Blocks.STICKY_PISTON, Blocks.REPEATER,
-            Blocks.COMPARATOR);
+        buildHighPriorityColorGroup(new Color(0f, 1f, 1f), Blocks.DIAMOND_BLOCK, Blocks.DIAMOND_ORE);
+        buildHighPriorityColorGroup(new Color(0.0f, 1.0f, 0.49803922f), Blocks.EMERALD_BLOCK, Blocks.EMERALD_ORE);
+        buildHighPriorityColorGroup(new Color(1.0f, 0.84313726f, 0.0f), Blocks.GOLD_BLOCK, Blocks.GOLD_ORE);
+        buildHighPriorityColorGroup(new Color(0.972549f, 0.972549f, 1.0f), Blocks.IRON_BLOCK, Blocks.NETHER_QUARTZ_ORE);
+        buildHighPriorityColorGroup(Color.BLACK, Blocks.COAL_BLOCK, Blocks.COAL_ORE);
+        buildHighPriorityColorGroup(Color.BLUE, Blocks.LAPIS_BLOCK, Blocks.LAPIS_ORE);
+        buildHighPriorityColorGroup(Color.RED, Blocks.REDSTONE_ORE, Blocks.REDSTONE_BLOCK,
+                                    Blocks.REDSTONE_TORCH, Blocks.REDSTONE_WIRE, Blocks.REDSTONE_WALL_TORCH,
+                                    Blocks.POWERED_RAIL, Blocks.PISTON, Blocks.STICKY_PISTON, Blocks.REPEATER,
+                                    Blocks.COMPARATOR);
 
-        blockColorGroup(RGBA.RED, "RED_");
-        blockColorGroup(new RGBA(1.0f, 0.64705884f, 0.0f), "ORANGE_");
-        blockColorGroup(RGBA.YELLOW, "YELLOW_");
-        blockColorGroup(RGBA.GREEN, "LIME_");
-        blockColorGroup(new RGBA(0.0f, 0.5019608f, 0.0f), "GREEN_");
-        blockColorGroup(new RGBA(0.6901961f, 0.8784314f, 0.9019608f), "LIGHT_BLUE_");
-        blockColorGroup(new RGBA(0.0f, 0.0f, 0.54509807f), "DARK_BLUE_");
-        blockColorGroup(RGBA.BLUE, "BLUE_");
-        blockColorGroup(new RGBA(1.0f, 0.0f, 1.0f), "MAGENTA_");
-        blockColorGroup(new RGBA(1.0f, 0.4117647f, 0.7058824f), "PINK_");
-        blockColorGroup(new RGBA(Formatting.DARK_PURPLE.getColorValue(), 1), "PURPLE_");
-        blockColorGroup(new RGBA(1.0f, 0.98039216f, 0.9411765f), "WHITE_");
-        blockColorGroup(new RGBA(0.6627451f, 0.6627451f, 0.6627451f), "DARK_GRAY_");
-        blockColorGroup(new RGBA(0.827451f, 0.827451f, 0.827451f), "LIGHT_GRAY_");
-        blockColorGroup(new RGBA(0.5019608f, 0.5019608f, 0.5019608f), "GRAY_");
-        blockColorGroup(new RGBA(0.54509807f, 0.27058825f, 0.07450981f), "BROWN_");
-        blockColorGroup(new RGBA(0f, 0f, 0f, 1f), "BLACK_");
-
-
+        keywordColorGroup(Color.RED, "RED_");
+        keywordColorGroup(new Color(1.0f, 0.64705884f, 0.0f), "ORANGE_");
+        keywordColorGroup(Color.YELLOW, "YELLOW_");
+        keywordColorGroup(Color.GREEN, "LIME_");
+        keywordColorGroup(new Color(0.0f, 0.5019608f, 0.0f), "GREEN_");
+        keywordColorGroup(new Color(0.6901961f, 0.8784314f, 0.9019608f), "LIGHT_BLUE_");
+        keywordColorGroup(new Color(0.0f, 0.0f, 0.54509807f), "DARK_BLUE_");
+        keywordColorGroup(new Color(0f, 0f, 1f, 1f), "BLUE_");
+        keywordColorGroup(new Color(1f, 0f, 1f), "MAGENTA_");
+        keywordColorGroup(new Color(1f, 0.4117647f, 0.7058824f), "PINK_");
+        keywordColorGroup(new Color(150, 100, 255), "PURPLE_");
+        keywordColorGroup(new Color(1, 0.98039216f, 0.9411765f), "WHITE_");
+        keywordColorGroup(new Color(0.6627451f, 0.6627451f, 0.6627451f), "DARK_GRAY_");
+        keywordColorGroup(new Color(0.827451f, 0.827451f, 0.827451f), "LIGHT_GRAY_");
+        keywordColorGroup(new Color(0.5019608f, 0.5019608f, 0.5019608f), "GRAY_");
+        keywordColorGroup(new Color(0.54509807f, 0.27058825f, 0.07450981f), "BROWN_");
+        keywordColorGroup(new Color(0, 0, 0, 1), "BLACK_");
     }
 
-    private static void blockColorGroup(RGBA color, String keyword) {
+    private static void keywordColorGroup(Color color, String keyword) {
         System.out.println("Loading keyword group " + keyword);
         for (Block block : DefaultedRegistry.BLOCK) {
             if (block == null || COLOR_MAP.containsKey(block)) {
@@ -66,7 +60,7 @@ public class BlockHelper {
         }
     }
 
-    private static void blockColorGroup(RGBA color, Block... blocks) {
+    private static void buildHighPriorityColorGroup(Color color, Block... blocks) {
         for (Block block : blocks) {
             HIGHEST_PRIORITY.put(block, color);
         }
@@ -76,23 +70,13 @@ public class BlockHelper {
         return DefaultedRegistry.BLOCK.get(new Identifier(string.toLowerCase()));
     }
 
-    public static RGBA getBlockColor(Block block) {
-        RGBA blockColor = null;
+    public static Color getBlockColor(Block block) {
         if (HIGHEST_PRIORITY.containsKey(block)) {
-            blockColor = HIGHEST_PRIORITY.get(block);
+            return HIGHEST_PRIORITY.get(block);
+        } else if (COLOR_MAP.containsKey(block)) {
+            return COLOR_MAP.get(block);
         }
-        if (COLOR_MAP.containsKey(block)) {
-            blockColor = COLOR_MAP.get(block);
-        }
-        if (blockColor != null) {
-            if (LOW_PRIORITY.contains(block)) {
-                blockColor.setOpacity(0.3f);
-            }
-            return blockColor;
-        }
-        blockColor = RGBA.YELLOW;
-        COLOR_MAP.put(block, blockColor);
-        return blockColor;
+        return Color.YELLOW;
     }
 
 }

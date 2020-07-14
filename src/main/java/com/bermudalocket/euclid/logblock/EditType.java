@@ -1,25 +1,17 @@
 package com.bermudalocket.euclid.logblock;
 
-import com.bermudalocket.euclid.util.RGBA;
+import java.awt.Color;
 
 public enum EditType {
 
-    CREATED(RGBA.GREEN),
-    DESTROYED(RGBA.RED),
-    REPLACED(RGBA.YELLOW);
+    CREATED(Color.GREEN),
+    DESTROYED(Color.RED),
+    REPLACED(Color.YELLOW);
 
-    private RGBA color;
+    public final Color color;
 
-    EditType(RGBA color) {
+    EditType(Color color) {
         this.color = color;
-    }
-
-    public RGBA getColor() {
-        return color;
-    }
-
-    public static String getDesc(EditType type) {
-        return type.toString().toLowerCase();
     }
 
     public static EditType fromString(String string) {

@@ -6,54 +6,42 @@ import net.minecraft.util.math.BlockPos;
 public class Result {
 
     public final int id;
-    private final String player;
-    private final Block block;
-    private final BlockPos blockPos;
-    private boolean visible;
-    private long timestamp;
+    public final String player;
+    public final Block block;
+    public final BlockPos blockPos;
+    public boolean visible;
+    public long timestamp;
+    public final EditType editType;
 
-    public Result(int id, String player, Block block, BlockPos pos, long timestamp) {
+    public Result(int id, String player, Block block, BlockPos pos, long timestamp, EditType editType) {
         this.id = id;
         this.player = player;
         this.block = block;
         this.blockPos = pos;
         this.timestamp = timestamp;
         this.visible = true;
+        this.editType = editType;
     }
 
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    /**
-     * Offsets the timestamp by 1000 ms.
-     */
+    // offsets this timestamp by 1000ms
     public void offsetTimestamp() {
-        timestamp += 1000;
-    }
-
-    public String getPlayerName() {
-        return player;
-    }
-
-    public Block getBlock() {
-        return block;
-    }
-
-    public boolean isHidden() {
-        return !visible;
-    }
-
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
-
-    public BlockPos getPos() {
-        return this.blockPos;
+        timestamp -= 1;
     }
 
     public boolean overrides(Result result) {
-        return blockPos == result.getPos() && timestamp > result.getTimestamp();
+        return this.blockPos == result.blockPos && this.timestamp > result.timestamp;
     }
 
+    @Override
+    public String toString() {
+        return "Result{" +
+                "id=" + id +
+                ", player='" + player + '\'' +
+                ", block=" + block +
+                ", blockPos=" + blockPos +
+                ", visible=" + visible +
+                ", timestamp=" + timestamp +
+                ", editType=" + editType +
+                '}';
+    }
 }
